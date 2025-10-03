@@ -26,6 +26,7 @@ model Job {
   description String    @db.Text
   location    String?
   salary      String?
+  category    String?  // 👈 Tambah ini
   source      JobSource @default(CUSTOM)
   createdBy   User?     @relation("UserJobs", fields: [createdById], references: [id], onDelete: SetNull)
   createdById String?

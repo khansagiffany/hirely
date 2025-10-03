@@ -13,15 +13,23 @@ export async function GET(req: Request) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const skip = (page - 1) * limit
+    const category = searchParams.get('category')
+
+    const where: any = { isActive: true }
+    
+    // Filter by category if provided
+    if (category && category !== 'all') {
+      where.category = category
+    }
 
     const jobs = await prisma.job.findMany({
-      where: { isActive: true },
+      where,
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' }
     })
 
-    const total = await prisma.job.count({ where: { isActive: true } })
+    const total = await prisma.job.count({ where })
 
     return NextResponse.json({
       jobs,
@@ -57,8 +65,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { title, company, description, location, salary } = await req.json()
-    console.log("Form data:", { title, company, description, location, salary })
+    const { title, company, description, location, salary, category } = await req.json()
+    console.log("Form data:", { title, company, description, location, salary, category })
+
+    // Validate required fields
+    if (!title || !company || !description || !category) {
+      return NextResponse.json(
+        { error: "Missing required fields: title, company, description, category" },
+        { status: 400 }
+      )
+    }
 
     // Pastikan createdById ada
     if (!session.user.id) {
@@ -73,6 +89,7 @@ export async function POST(req: Request) {
         description,
         location,
         salary,
+        category,
         source: 'CUSTOM',
         createdById: null
       }

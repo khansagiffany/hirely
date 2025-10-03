@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Job" ADD COLUMN     "category" TEXT,
+ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP;
