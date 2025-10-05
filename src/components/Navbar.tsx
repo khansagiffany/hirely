@@ -37,6 +37,12 @@ export default function Navbar() {
                 <Link href="/chat" className="flex items-center text-gray-700 hover:text-blue-600">
                   AI Chat
                 </Link>
+                <Link href="/tasks" className="flex items-center text-gray-700 hover:text-blue-600">
+                  📋 Tasks
+                </Link>
+                <Link href="/calendar" className="flex items-center text-gray-700 hover:text-blue-600">
+                  📅 Calendar
+                </Link>
               </>
             )}
           </div>

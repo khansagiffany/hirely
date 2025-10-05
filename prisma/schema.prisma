@@ -15,7 +15,9 @@ model User {
   role          UserRole @default(JOB_SEEKER)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  
+  tasks       Task[]
+  events      Event[]
+
   jobs          Job[]    @relation("UserJobs")
 }
 
@@ -33,6 +35,38 @@ model Job {
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now()) @updatedAt
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("pending") // pending, in_progress, completed
+  priority    String   @default("medium")  // low, medium, high
+  dueDate     DateTime?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  color       String   @default("#3b82f6")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([startTime])
 }
 
 enum UserRole {
