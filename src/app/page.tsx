@@ -233,8 +233,11 @@ export default function Home() {
                         )}
                         {job.salary && (
                           <span className="flex items-center gap-1 font-semibold text-blue-600">
-                            <DollarSign className="w-4 h-4" />
-                            {job.salary}
+                            {new Intl.NumberFormat("id-ID", {
+                              style: "currency",
+                              currency: "IDR",
+                              maximumFractionDigits: 0,
+                            }).format(Number(job.salary))}
                           </span>
                         )}
                       </div>

@@ -25,9 +25,14 @@ export default function Navbar() {
                   </Link>
                 )}
                 {session.user.role === 'JOB_SEEKER' && (
-                  <Link href="/applications" className="flex items-center text-gray-700 hover:text-blue-600">
-                    Lamaran Saya
-                  </Link>
+                  <>
+                    <Link href="/applications" className="flex items-center text-gray-700 hover:text-blue-600">
+                      Lamaran Saya
+                    </Link>
+                    <Link href="/analyze" className="flex items-center text-gray-700 hover:text-blue-600">
+                      🔍 Analisis CV
+                    </Link>
+                  </>
                 )}
                 <Link href="/chat" className="flex items-center text-gray-700 hover:text-blue-600">
                   AI Chat
