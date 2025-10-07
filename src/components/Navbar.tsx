@@ -43,6 +43,9 @@ export default function Navbar() {
                 <Link href="/calendar" className="flex items-center text-gray-700 hover:text-blue-600">
                   📅 Calendar
                 </Link>
+                <Link href="/tips" className="flex items-center text-gray-700 hover:text-blue-600">
+                  📅 tips
+                </Link>
               </>
             )}
           </div>

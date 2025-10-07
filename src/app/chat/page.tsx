@@ -2,99 +2,58 @@
 // FILE: app/chat/page.tsx
 // ==========================================
 'use client'
-
-import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 
 export default function Chat() {
   const { data: session } = useSession()
-  const [messages, setMessages] = useState<Array<{role: string, content: string}>>([])
-  const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim()) return
-
-    const newMessages = [...messages, { role: 'user', content: input }]
-    setMessages(newMessages)
-    setInput('')
-    setLoading(true)
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages })
-      })
-
-      const data = await res.json()
-      setMessages([...newMessages, { role: 'assistant', content: data.response }])
-    } catch (err) {
-      alert('Error sending message')
-    } finally {
-      setLoading(false)
-    }
-  }
-
+  
   if (!session) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-        <p>Silakan login untuk menggunakan chatbot</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="max-w-md w-full mx-4">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Login Required</h2>
+            <p className="text-gray-600">Silakan login untuk menggunakan AI Career Assistant</p>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">AI Career Assistant</h1>
-      
-      <div className="bg-white rounded-lg shadow h-[600px] flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.length === 0 && (
-            <div className="text-center text-gray-500 py-16">
-              <p>Tanya aku tentang CV, interview, atau career tips!</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
             </div>
-          )}
-          
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] rounded-lg p-3 ${
-                msg.role === 'user' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
-                {msg.content}
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">AI Career Assistant</h1>
+              <p className="text-sm text-gray-500">Powered by intelligent conversation</p>
             </div>
-          ))}
-          
-          {loading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-lg p-3 text-gray-500">
-                Typing...
-              </div>
-            </div>
-          )}
+          </div>
         </div>
 
-        <form onSubmit={sendMessage} className="border-t p-4 flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ketik pesan..."
-            className="flex-1 border rounded px-4 py-2"
-            disabled={loading}
+        {/* Chat Container */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden" style={{ height: 'calc(100vh - 180px)' }}>
+          <iframe
+            src="https://www.chatbase.co/chatbot-iframe/QasbHoEj-lx13cHI0ZXKv"
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            className="w-full h-full"
+            title="AI Career Assistant Chatbot"
           />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            Kirim
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   )
