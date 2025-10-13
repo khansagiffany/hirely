@@ -131,16 +131,23 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full text-white py-3 rounded-lg font-medium transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: '#722f37',
+                cursor: loading ? 'not-allowed' : 'pointer',
+              }}
             >
-              {loading ? 'Loading...' : 'Continue'}
+              {loading ? 'Loading...' : 'Daftar Sekarang'}
             </button>
           </form>
 
           {/* Footer Link */}
           <p className="mt-6 text-center text-sm text-gray-600">
             Sudah punya akun?{' '}
-            <Link href="/login" className="text-blue-600 hover:underline font-medium">
+            <Link href="/login" 
+              className="hover:underline font-medium"
+              style={{ color: '#722f37' }}
+            >
               Login
             </Link>
           </p>
@@ -152,23 +159,14 @@ export default function Register() {
           </p>
         </div>
       </div>
-
+      
       {/* Right Side - Visual */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-400 via-blue-300 to-blue-200 items-center justify-center p-12">
-        <div className="relative">
-          {/* Placeholder for image */}
-          <div className="w-96 h-96 bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl shadow-2xl flex items-center justify-center transform rotate-6">
-            <div className="w-72 h-72 bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl">
-              <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Decorative elements */}
-          <div className="absolute -top-8 -left-8 w-20 h-20 bg-blue-300 rounded-full opacity-50"></div>
-          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-200 rounded-full opacity-30"></div>
-        </div>
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-400 via-blue-300 to-blue-200 items-center justify-center p-0 relative overflow-hidden">
+        <img
+          src="/img/hirely.png"
+          alt="Poster Hirely Career Coaching"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
       </div>
     </div>
   )
