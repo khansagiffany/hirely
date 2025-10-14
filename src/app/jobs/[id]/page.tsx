@@ -170,38 +170,65 @@ export default function JobDetail({ params }: { params: { id: string } }) {
             Job Description
           </h2>
 
-          <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none">
-            <ReactMarkdown
-  remarkPlugins={[remarkGfm]}
-  components={{
-    p: ({ node, ...props }) => <p className="text-[#2d2620]" {...props} />,
-    strong: ({ node, ...props }) => <strong className="font-semibold text-[#2d2620]" {...props} />,
-    a: ({ node, ...props }) => (
-      <a
-        className="text-[#722F37] font-medium underline hover:text-[#9b3c45]"
-        target="_blank"
-        rel="noopener noreferrer"
-        {...props}
-      />
-    ),
-    h1: ({ node, ...props }) => (
-      <h1 className="text-2xl font-bold border-b pb-1 mb-3 text-[#722F37]" {...props} />
-    ),
-    h2: ({ node, ...props }) => (
-      <h2 className="text-xl font-semibold mt-4 mb-2 text-[#722F37]" {...props} />
-    ),
-    li: ({ node, ...props }) => <li className="mb-1 text-[#6b5d54]" {...props} />,
-    blockquote: ({ node, ...props }) => (
-      <blockquote
-        className="border-l-4 pl-4 italic text-[#6b5d54] bg-[#EFDFBB]/20 rounded-r-lg"
-        {...props}
-      />
-    ),
-  }}
->
-  {job.description}
-            </ReactMarkdown>
-          </div>
+          <div className="max-w-none">
+  <ReactMarkdown
+    remarkPlugins={[remarkGfm]}
+    components={{
+      p: ({ node, ...props }) => (
+        <p className="text-[#2d2620] text-justify leading-relaxed mb-3" {...props} />
+      ),
+      strong: ({ node, ...props }) => (
+        <strong className="font-semibold text-[#2d2620]" {...props} />
+      ),
+      a: ({ node, ...props }) => (
+        <a
+          className="text-[#722F37] font-medium underline hover:text-[#9b3c45]"
+          target="_blank"
+          rel="noopener noreferrer"
+          {...props}
+        />
+      ),
+      h1: ({ node, ...props }) => (
+        <h1
+          className="text-2xl font-bold border-b pb-1 mb-4 text-[#722F37]"
+          {...props}
+        />
+      ),
+      h2: ({ node, ...props }) => (
+        <h2
+          className="text-xl font-semibold mt-6 mb-3 text-[#722F37] border-l-4 border-[#722F37] pl-3"
+          {...props}
+        />
+      ),
+      h3: ({ node, ...props }) => (
+        <h2
+          className="text-xl font-semibold mt-6 mb-3 text-[#722F37] border-l-4 border-[#722F37] pl-3"
+          {...props}
+        />
+      ),
+      ol: ({ node, ...props }) => (
+        <ol
+          className="list-decimal pl-6 space-y-2 text-[#2d2620] text-justify leading-relaxed"
+          {...props}
+        />
+      ),
+      li: ({ node, ...props }) => (
+        <li className="text-[#2d2620] leading-relaxed" {...props} />
+      ),
+      blockquote: ({ node, ...props }) => (
+        <blockquote
+          className="border-l-4 pl-4 italic text-[#2d2620] bg-[#EFDFBB]/20 rounded-r-lg"
+          {...props}
+        />
+      ),
+    }}
+  >
+    {job.description}
+  </ReactMarkdown>
+</div>
+
+
+
         </div>
 
         {/* Apply Section */}

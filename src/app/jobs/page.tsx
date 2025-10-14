@@ -336,9 +336,9 @@ export default function Jobs() {
             <p className="text-sm text-gray-600">
               <span className="font-bold text-gray-900">{filteredJobs.length}</span> Jobs found
             </p>
-            {session?.user.role === 'EMPLOYER' && (
-              <Link 
-                href="/jobs/create"
+            {session && session.user.role === 'EMPLOYER' && (
+              <Link
+                href="/jobs/new"
                 className="inline-flex items-center gap-2 bg-[#722f37] text-white px-4 py-2 rounded-lg hover:bg-[#5f2730] transition-all font-medium text-sm"
               >
                 <Plus className="w-4 h-4" />
