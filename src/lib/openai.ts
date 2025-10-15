@@ -1,6 +1,3 @@
-// ==========================================
-// FILE: lib/openai.ts
-// ==========================================
 import OpenAI from 'openai'
 
 export const openai = new OpenAI({
@@ -26,16 +23,17 @@ export async function screenCV(cvText: string, jobDescription: string) {
   return JSON.parse(completion.choices[0].message.content || '{}')
 }
 
-export async function chatWithAI(messages: Array<{role: string, content: string}>) {
+export async function chatWithAI(
+  messages: Array<{ role: 'system' | 'user' | 'assistant', content: string }>
+) {
+  const systemMessage = {
+    role: "system" as const,
+    content: "You are a helpful career advisor assistant. Help users with job applications, CV tips, and interview preparation."
+  }
+
   const completion = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: "You are a helpful career advisor assistant. Help users with job applications, CV tips, and interview preparation."
-      },
-      ...messages
-    ],
+    messages: [systemMessage, ...messages],
     temperature: 0.8,
   })
 
