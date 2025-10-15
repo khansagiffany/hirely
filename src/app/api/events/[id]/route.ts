@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/db"
+import { prisma } from "@/lib/db";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -13,15 +13,17 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
+
     const event = await prisma.event.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!event || event.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.event.delete({ where: { id: params.id } });
+    await prisma.event.delete({ where: { id } });
     return NextResponse.json({ message: "Event deleted" });
   } catch (error) {
     console.error("Error deleting event:", error);
@@ -31,7 +33,7 @@ export async function DELETE(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -39,9 +41,11 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await req.json();
+    
     const event = await prisma.event.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!event || event.userId !== session.user.id) {
@@ -49,7 +53,7 @@ export async function PATCH(
     }
 
     const updatedEvent = await prisma.event.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(body.title && { title: body.title }),
         ...(body.description !== undefined && { description: body.description }),
