@@ -1,3 +1,17 @@
+// ==========================================
+// FILE: app/api/chat/route.ts
+// ==========================================
+
+// Temporary disabled route
+import { NextResponse } from "next/server";
+
+export async function POST() {
+  return NextResponse.json(
+    { message: "Chat API is currently disabled." },
+    { status: 503 }
+  );
+}
+
 // // ==========================================
 // // FILE: app/api/chat/route.ts
 // // ==========================================
