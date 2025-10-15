@@ -9,11 +9,13 @@ import { authOptions } from "@/lib/auth"
 // GET single job
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const job = await prisma.job.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!job) {
@@ -36,9 +38,11 @@ export async function GET(
 // DELETE job (Employer only - own jobs)
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await getServerSession(authOptions)
     console.log("DELETE Session:", session)
 
@@ -54,7 +58,7 @@ export async function DELETE(
 
     // Check if job exists
     const job = await prisma.job.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!job) {
@@ -75,20 +79,20 @@ export async function DELETE(
 
     // Soft delete (set isActive = false) - Recommended
     await prisma.job.update({
-      where: { id: params.id },
+      where: { id },
       data: { isActive: false }
     })
 
     // Atau hard delete (hapus permanen):
     // await prisma.job.delete({
-    //   where: { id: params.id }
+    //   where: { id }
     // })
 
-    console.log("Job deleted successfully:", params.id)
+    console.log("Job deleted successfully:", id)
 
     return NextResponse.json({ 
       message: "Job deleted successfully",
-      id: params.id 
+      id 
     })
   } catch (error) {
     console.error("DELETE /api/jobs/[id] error:", error)
@@ -102,9 +106,11 @@ export async function DELETE(
 // PUT/PATCH update job (Employer only - own jobs)
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await getServerSession(authOptions)
     console.log("PUT Session:", session)
 
@@ -118,7 +124,7 @@ export async function PUT(
 
     // Check if job exists
     const job = await prisma.job.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!job) {
@@ -148,7 +154,7 @@ export async function PUT(
     }
 
     const updatedJob = await prisma.job.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         company,
