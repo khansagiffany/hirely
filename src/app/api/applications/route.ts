@@ -5,7 +5,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { screenCV } from "@/lib/openai"
+import { screenCV } from "@/lib/gemini" // ✅ Ganti dari @/lib/openai
 
 export async function POST(req: Request) {
   try {
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       )
     }
 
-    // AI Screening
+    // AI Screening dengan Gemini
     const screening = await screenCV(cvText, job.description)
 
     const application = await prisma.application.create({
