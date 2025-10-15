@@ -1,46 +1,25 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as pdfjsLib from "pdfjs-dist";
 
 // Force Node.js runtime instead of Edge Runtime
 export const runtime = 'nodejs';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+interface PDFTextItem {
+  str?: string;
+  [key: string]: unknown;
+}
+
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  // Dynamically import canvas for Node.js environment
-  const canvas = await import('canvas');
-  
-  // @ts-ignore - Set canvas factory for Node.js
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-  
-  const data = new Uint8Array(buffer);
-  const loadingTask = pdfjsLib.getDocument({
-    data,
-    // @ts-ignore
-    canvasFactory: canvas.createCanvas ? {
-      create: (width: number, height: number) => {
-        const canvasEl = canvas.createCanvas(width, height);
-        return {
-          canvas: canvasEl,
-          context: canvasEl.getContext('2d')
-        };
-      }
-    } : undefined
-  });
-  
-  const pdf = await loadingTask.promise;
-  let text = "";
-
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const pageText = content.items
-      .map((item: any) => ('str' in item ? item.str : ''))
-      .join(" ");
-    text += pageText + "\n";
+  try {
+    // Dynamic import to handle pdf-parse's module system
+    const pdfParse = (await import("pdf-parse")).default;
+    const data = await pdfParse(buffer);
+    return data.text;
+  } catch (error) {
+    console.error("Error parsing PDF:", error);
+    throw new Error("Failed to extract text from PDF");
   }
-
-  return text;
 }
 
 export async function POST(req: Request) {
@@ -50,6 +29,11 @@ export async function POST(req: Request) {
 
     if (!file) {
       return Response.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      return Response.json({ error: "Only PDF files are allowed" }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
