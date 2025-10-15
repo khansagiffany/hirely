@@ -5,18 +5,30 @@ import { ArrowLeft, MapPin, DollarSign, Building2, Upload, Sparkles, Clock, X, C
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
+interface Job {
+  id: string
+  title: string
+  company: string
+  location: string
+  salary: number
+  description: string
+}
+
 export default function JobDetail({ params }: { params: { id: string } }) {
-  const [job, setJob] = useState<any>(null)
+  const [job, setJob] = useState<Job | null>(null)
   const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState(false)
   const [cvFile, setCvFile] = useState<File | null>(null)
-  const [session, setSession] = useState(true) // Simulasi session, sesuaikan dengan useSession()
+  const [session] = useState(true) // Simulasi session, sesuaikan dengan useSession()
 
   useEffect(() => {
     fetch(`/api/jobs/${params.id}`)
       .then(res => res.json())
-      .then(data => {
+      .then((data: Job) => {
         setJob(data)
+        setLoading(false)
+      })
+      .catch(() => {
         setLoading(false)
       })
   }, [params.id])
@@ -42,7 +54,7 @@ export default function JobDetail({ params }: { params: { id: string } }) {
       } else {
         alert('Gagal mengirim lamaran')
       }
-    } catch (err) {
+    } catch {
       alert('Error')
     } finally {
       setApplying(false)
@@ -58,6 +70,16 @@ export default function JobDetail({ params }: { params: { id: string } }) {
             style={{ borderColor: '#722F37', borderTopColor: 'transparent' }}
           ></div>
           <p className="text-gray-600 font-medium">Loading job details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!job) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 font-medium">Job not found</p>
         </div>
       </div>
     )
@@ -171,64 +193,61 @@ export default function JobDetail({ params }: { params: { id: string } }) {
           </h2>
 
           <div className="max-w-none">
-  <ReactMarkdown
-    remarkPlugins={[remarkGfm]}
-    components={{
-      p: ({ node, ...props }) => (
-        <p className="text-[#2d2620] text-justify leading-relaxed mb-3" {...props} />
-      ),
-      strong: ({ node, ...props }) => (
-        <strong className="font-semibold text-[#2d2620]" {...props} />
-      ),
-      a: ({ node, ...props }) => (
-        <a
-          className="text-[#722F37] font-medium underline hover:text-[#9b3c45]"
-          target="_blank"
-          rel="noopener noreferrer"
-          {...props}
-        />
-      ),
-      h1: ({ node, ...props }) => (
-        <h1
-          className="text-2xl font-bold border-b pb-1 mb-4 text-[#722F37]"
-          {...props}
-        />
-      ),
-      h2: ({ node, ...props }) => (
-        <h2
-          className="text-xl font-semibold mt-6 mb-3 text-[#722F37] border-l-4 border-[#722F37] pl-3"
-          {...props}
-        />
-      ),
-      h3: ({ node, ...props }) => (
-        <h2
-          className="text-xl font-semibold mt-6 mb-3 text-[#722F37] border-l-4 border-[#722F37] pl-3"
-          {...props}
-        />
-      ),
-      ol: ({ node, ...props }) => (
-        <ol
-          className="list-decimal pl-6 space-y-2 text-[#2d2620] text-justify leading-relaxed"
-          {...props}
-        />
-      ),
-      li: ({ node, ...props }) => (
-        <li className="text-[#2d2620] leading-relaxed" {...props} />
-      ),
-      blockquote: ({ node, ...props }) => (
-        <blockquote
-          className="border-l-4 pl-4 italic text-[#2d2620] bg-[#EFDFBB]/20 rounded-r-lg"
-          {...props}
-        />
-      ),
-    }}
-  >
-    {job.description}
-  </ReactMarkdown>
-</div>
-
-
-
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                p: ({ ...props }) => (
+                  <p className="text-[#2d2620] text-justify leading-relaxed mb-3" {...props} />
+                ),
+                strong: ({ ...props }) => (
+                  <strong className="font-semibold text-[#2d2620]" {...props} />
+                ),
+                a: ({ ...props }) => (
+                  <a
+                    className="text-[#722F37] font-medium underline hover:text-[#9b3c45]"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    {...props}
+                  />
+                ),
+                h1: ({ ...props }) => (
+                  <h1
+                    className="text-2xl font-bold border-b pb-1 mb-4 text-[#722F37]"
+                    {...props}
+                  />
+                ),
+                h2: ({ ...props }) => (
+                  <h2
+                    className="text-xl font-semibold mt-6 mb-3 text-[#722F37] border-l-4 border-[#722F37] pl-3"
+                    {...props}
+                  />
+                ),
+                h3: ({ ...props }) => (
+                  <h3
+                    className="text-xl font-semibold mt-6 mb-3 text-[#722F37] border-l-4 border-[#722F37] pl-3"
+                    {...props}
+                  />
+                ),
+                ol: ({ ...props }) => (
+                  <ol
+                    className="list-decimal pl-6 space-y-2 text-[#2d2620] text-justify leading-relaxed"
+                    {...props}
+                  />
+                ),
+                li: ({ ...props }) => (
+                  <li className="text-[#2d2620] leading-relaxed" {...props} />
+                ),
+                blockquote: ({ ...props }) => (
+                  <blockquote
+                    className="border-l-4 pl-4 italic text-[#2d2620] bg-[#EFDFBB]/20 rounded-r-lg"
+                    {...props}
+                  />
+                ),
+              }}
+            >
+              {job.description}
+            </ReactMarkdown>
+          </div>
         </div>
 
         {/* Apply Section */}

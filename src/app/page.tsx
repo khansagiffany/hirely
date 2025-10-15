@@ -164,7 +164,7 @@ export default function Home() {
               ) : (
                 <>
                   <p>Join our team and make an impact with your skills and experience.</p>
-                  <p>We're looking for talented professionals to help us grow and achieve our goals.</p>
+                  <p>We are looking for talented professionals to help us grow and achieve our goals.</p>
                 </>
               )}
             </div>

@@ -3,6 +3,28 @@
 // ==========================================
 import { NextResponse } from 'next/server'
 
+// Define YouTube API response types
+interface YouTubeVideoItem {
+  id: {
+    videoId: string
+  }
+  snippet: {
+    title: string
+    description: string
+    thumbnails: {
+      medium: {
+        url: string
+      }
+    }
+    channelTitle: string
+    publishedAt: string
+  }
+}
+
+interface YouTubeAPIResponse {
+  items: YouTubeVideoItem[]
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q') || 'tips cari kerja indonesia'
@@ -22,10 +44,10 @@ export async function GET(request: Request) {
       throw new Error('Failed to fetch videos')
     }
 
-    const data = await response.json()
+    const data = await response.json() as YouTubeAPIResponse
     
     // Format data biar lebih clean
-    const videos = data.items.map((item: any) => ({
+    const videos = data.items.map((item) => ({
       id: item.id.videoId,
       title: item.snippet.title,
       description: item.snippet.description,

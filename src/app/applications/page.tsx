@@ -3,9 +3,34 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 
+// Define types
+interface Job {
+  id: string
+  title: string
+  company: string
+}
+
+interface AIFeedback {
+  score: number
+  strengths?: string[]
+  weaknesses?: string[]
+}
+
+interface Application {
+  id: string
+  jobId: string
+  cvUrl: string
+  aiScore: number
+  aiFeedback: AIFeedback
+  status: string
+  createdAt: string
+  updatedAt: string
+  job: Job
+}
+
 export default function Applications() {
   const { data: session } = useSession()
-  const [applications, setApplications] = useState<any[]>([])
+  const [applications, setApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -67,7 +92,7 @@ export default function Applications() {
                     <div className="mb-2">
                       <p className="text-sm font-medium text-green-700">Kelebihan:</p>
                       <ul className="text-sm text-gray-700 list-disc list-inside">
-                        {app.aiFeedback.strengths.map((s: string, i: number) => (
+                        {app.aiFeedback.strengths.map((s, i) => (
                           <li key={i}>{s}</li>
                         ))}
                       </ul>
@@ -77,7 +102,7 @@ export default function Applications() {
                     <div>
                       <p className="text-sm font-medium text-red-700">Area Improvement:</p>
                       <ul className="text-sm text-gray-700 list-disc list-inside">
-                        {app.aiFeedback.weaknesses.map((w: string, i: number) => (
+                        {app.aiFeedback.weaknesses.map((w, i) => (
                           <li key={i}>{w}</li>
                         ))}
                       </ul>

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Mail, Lock, User } from 'lucide-react'
 
 export default function Register() {
@@ -33,10 +34,11 @@ export default function Register() {
         throw new Error(data.error || 'Registration failed')
       }
 
-      const data = await res.json()
+      await res.json()
       router.push('/login?registered=true')
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -162,10 +164,12 @@ export default function Register() {
       
       {/* Right Side - Visual */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-400 via-blue-300 to-blue-200 items-center justify-center p-0 relative overflow-hidden">
-        <img
+        <Image
           src="/img/hirely.png"
           alt="Poster Hirely Career Coaching"
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
         />
       </div>
     </div>

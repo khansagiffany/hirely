@@ -5,6 +5,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { Prisma } from "@prisma/client"
 
 // GET all jobs
 export async function GET(req: Request) {
@@ -15,7 +16,7 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit
     const category = searchParams.get('category')
 
-    const where: any = { isActive: true }
+    const where: Prisma.JobWhereInput = { isActive: true }
     
     // Filter by category if provided
     if (category && category !== 'all') {
@@ -91,7 +92,7 @@ export async function POST(req: Request) {
         salary,
         category,
         source: 'CUSTOM',
-        createdById: null
+        createdById: session.user.id // 👈 Gunakan session.user.id, bukan null
       }
     })
 

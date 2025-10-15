@@ -11,13 +11,13 @@ async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   let text = "";
 
   for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const pageText = content.items
-      .map((item: any) => item.str)
-      .join(" ");
-    text += pageText + "\n";
-  }
+  const page = await pdf.getPage(i);
+  const content = await page.getTextContent();
+  const pageText = content.items
+    .map((item) => ('str' in item ? item.str : ''))
+    .join(" ");
+  text += pageText + "\n";
+}
 
   return text;
 }
