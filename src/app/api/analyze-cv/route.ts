@@ -1,23 +1,44 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as pdfjs from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist";
+
+// Force Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
+  // Dynamically import canvas for Node.js environment
+  const canvas = await import('canvas');
+  
+  // @ts-ignore - Set canvas factory for Node.js
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  
   const data = new Uint8Array(buffer);
-  const pdf = await pdfjs.getDocument({ data }).promise;
+  const loadingTask = pdfjsLib.getDocument({
+    data,
+    // @ts-ignore
+    canvasFactory: canvas.createCanvas ? {
+      create: (width: number, height: number) => {
+        const canvasEl = canvas.createCanvas(width, height);
+        return {
+          canvas: canvasEl,
+          context: canvasEl.getContext('2d')
+        };
+      }
+    } : undefined
+  });
+  
+  const pdf = await loadingTask.promise;
   let text = "";
 
   for (let i = 1; i <= pdf.numPages; i++) {
-  const page = await pdf.getPage(i);
-  const content = await page.getTextContent();
-  const pageText = content.items
-    .map((item) => ('str' in item ? item.str : ''))
-    .join(" ");
-  text += pageText + "\n";
-}
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .map((item: any) => ('str' in item ? item.str : ''))
+      .join(" ");
+    text += pageText + "\n";
+  }
 
   return text;
 }
@@ -39,7 +60,7 @@ export async function POST(req: Request) {
       return Response.json({ error: "No text found in PDF" }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
     const prompt = `
 Analisis CV berikut dan berikan penilaian numerik untuk setiap aspek.
