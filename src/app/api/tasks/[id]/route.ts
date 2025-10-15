@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db"
 // DELETE task
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,9 +15,12 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Await params in Next.js 15
+    const { id } = await params;
+
     // Check if task belongs to user
     const task = await prisma.task.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!task) {
@@ -29,7 +32,7 @@ export async function DELETE(
     }
 
     await prisma.task.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Task deleted" });
@@ -42,7 +45,7 @@ export async function DELETE(
 // PATCH update task
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -51,12 +54,15 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Await params in Next.js 15
+    const { id } = await params;
+
     const body = await req.json();
     const { title, description, status, priority, dueDate } = body;
 
     // Check if task belongs to user
     const task = await prisma.task.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!task) {
@@ -68,7 +74,7 @@ export async function PATCH(
     }
 
     const updatedTask = await prisma.task.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(title && { title }),
         ...(description !== undefined && { description }),
