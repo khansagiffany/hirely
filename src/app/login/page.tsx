@@ -31,7 +31,7 @@ function LoginForm() {
       if (result?.error) {
         setError('Email atau password salah')
       } else {
-        router.push('/jobs')
+        router.push('/')
         router.refresh()
       }
     } catch (err) {
