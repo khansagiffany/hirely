@@ -148,7 +148,7 @@ export default function NewJob() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-700 text-white py-3 rounded hover:bg-blue-800 disabled:bg-gray-400"
+        className="w-full bg-[#722F37] text-white py-3 rounded hover:bg-[#8C3A45] disabled:bg-gray-400"
       >
         {loading ? 'Memposting...' : 'Post Lowongan'}
       </button>

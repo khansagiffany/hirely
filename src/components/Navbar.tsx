@@ -23,7 +23,7 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {session && session.user.role === 'EMPLOYER' && (
-              <Link href="/jobs/new" className="transition font-medium" style={{ color: '#6b5d54' }}>
+              <Link href="/jobs" className="transition font-medium" style={{ color: '#6b5d54' }}>
                 Post Job
               </Link>
             )}
@@ -90,7 +90,7 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-3 border-t backdrop-blur-lg rounded-b-2xl -mx-4 px-4" style={{ borderColor: '#ddd2c7', backgroundColor: 'rgba(255, 255, 255, 0.4)' }}>
             {session && session.user.role === 'EMPLOYER' && (
-              <Link href="/jobs/new" className="block transition font-medium py-2" style={{ color: '#6b5d54' }}>
+              <Link href="/jobs" className="block transition font-medium py-2" style={{ color: '#6b5d54' }}>
                 Post Job
               </Link>
             )}
