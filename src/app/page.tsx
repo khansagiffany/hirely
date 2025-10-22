@@ -375,24 +375,28 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
-              { icon: Users, label: 'AI-Powered Matching', desc: 'Match with the best opportunities using advanced AI technology and machine learning.', color: 'from-purple-600 to-pink-600', bg: 'from-purple-50 to-pink-50', border: 'border-purple-100' },
-              { icon: FileCheck, label: 'Smart CV Screening', desc: 'Automated CV analysis for finding the best candidates instantly.', color: 'from-blue-600 to-cyan-600', bg: 'from-blue-50 to-cyan-50', border: 'border-blue-100' },
-              { icon: Bell, label: 'Job Alerts', desc: 'Real-time notifications for new opportunities matching your profile.', color: 'from-orange-600 to-yellow-600', bg: 'from-orange-50 to-yellow-50', border: 'border-orange-100' },
-              { icon: CheckCircle, label: 'One-Click Apply', desc: 'Apply to multiple jobs quickly with one click and track progress.', color: 'from-green-600 to-emerald-600', bg: 'from-green-50 to-emerald-50', border: 'border-green-100' },
-              { icon: MessageSquare, label: '24/7 AI Chatbot', desc: 'AI assistant available anytime for your questions and guidance.', color: 'from-rose-600 to-pink-600', bg: 'from-rose-50 to-pink-50', border: 'border-rose-100' },
-              { icon: Calendar, label: 'Smart Calendar', desc: 'Schedule interviews with automatic sync across all devices.', color: 'from-indigo-600 to-purple-600', bg: 'from-indigo-50 to-purple-50', border: 'border-indigo-100' },
-              { icon: Video, label: 'Career Coaching', desc: 'Professional guidance and tips to accelerate your career growth.', color: 'from-teal-600 to-cyan-600', bg: 'from-teal-50 to-cyan-50', border: 'border-teal-100' },
-              { icon: Sparkles, label: 'Job Recommendations', desc: 'Personalized suggestions based on your profile and preferences.', color: 'from-amber-600 to-orange-600', bg: 'from-amber-50 to-orange-50', border: 'border-amber-100' },
+              { icon: Users, label: 'AI-Powered Matching', desc: 'Match with the best opportunities using advanced AI technology and machine learning.', color: 'from-purple-600 to-pink-600', bg: 'from-purple-50 to-pink-50', border: 'border-purple-100', href: '#' },
+              { icon: FileCheck, label: 'Smart CV Screening', desc: 'Automated CV analysis for finding the best candidates instantly.', color: 'from-blue-600 to-cyan-600', bg: 'from-blue-50 to-cyan-50', border: 'border-blue-100', href: '/analyze' },
+              { icon: Bell, label: 'Job Alerts', desc: 'Real-time notifications for new opportunities matching your profile.', color: 'from-orange-600 to-yellow-600', bg: 'from-orange-50 to-yellow-50', border: 'border-orange-100', href: '/jobs' },
+              { icon: CheckCircle, label: 'One-Click Apply', desc: 'Apply to multiple jobs quickly with one click and track progress.', color: 'from-green-600 to-emerald-600', bg: 'from-green-50 to-emerald-50', border: 'border-green-100', href: '#' },
+              { icon: MessageSquare, label: '24/7 AI Chatbot', desc: 'AI assistant available anytime for your questions and guidance.', color: 'from-rose-600 to-pink-600', bg: 'from-rose-50 to-pink-50', border: 'border-rose-100', href: '/chat' },
+              { icon: Calendar, label: 'Smart Calendar', desc: 'Schedule interviews with automatic sync across all devices.', color: 'from-indigo-600 to-purple-600', bg: 'from-indigo-50 to-purple-50', border: 'border-indigo-100', href: '/calendar' },
+              { icon: Video, label: 'Career Coaching', desc: 'Professional guidance and tips to accelerate your career growth.', color: 'from-teal-600 to-cyan-600', bg: 'from-teal-50 to-cyan-50', border: 'border-teal-100', href: '/tips' },
+              { icon: Sparkles, label: 'Job Recommendations', desc: 'Personalized suggestions based on your profile and preferences.', color: 'from-amber-600 to-orange-600', bg: 'from-amber-50 to-orange-50', border: 'border-amber-100', href: '#' },
             ].map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={idx} className={`group bg-gradient-to-br ${item.bg} rounded-2xl sm:rounded-3xl p-6 sm:p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border ${item.border}`}>
+                <a key={idx} href={item.href} className={`group bg-gradient-to-br ${item.bg} rounded-2xl sm:rounded-3xl p-6 sm:p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border ${item.border} block`}>
                   <div className={`w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-110 transition-transform shadow-lg`}>
                     <Icon className="w-6 sm:w-7 h-6 sm:h-7 text-white" />
                   </div>
                   <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-2 sm:mb-3">{item.label}</h3>
-                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{item.desc}</p>
-                </div>
+                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-3">{item.desc}</p>
+                  <span className={`text-xs sm:text-sm font-semibold bg-gradient-to-r ${item.color} bg-clip-text text-transparent group-hover:underline inline-flex items-center gap-1`}>
+                    Lihat Selengkapnya 
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
+                </a>
               );
             })}
           </div>
