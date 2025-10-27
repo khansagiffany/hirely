@@ -5,12 +5,32 @@ export const runtime = 'nodejs';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// Define proper type for pdf-parse
+interface PDFParseResult {
+  numpages: number;
+  numrender: number;
+  info: Record<string, unknown>;
+  metadata: Record<string, unknown>;
+  text: string;
+  version: string;
+}
+
+interface PDFParseOptions {
+  max?: number;
+  version?: string;
+}
+
+type PDFParseFunction = (
+  dataBuffer: Buffer,
+  options?: PDFParseOptions
+) => Promise<PDFParseResult>;
+
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
     console.log('PDF Buffer size:', buffer.length);
     
-    // Use pdf-parse with proper configuration
-    const pdfParse = (await import("pdf-parse")).default as any;
+    // Use pdf-parse with proper typing
+    const pdfParse = (await import("pdf-parse")).default as PDFParseFunction;
     
     const data = await pdfParse(buffer, {
       max: 0, // Parse all pages
