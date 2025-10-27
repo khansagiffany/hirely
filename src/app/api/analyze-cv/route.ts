@@ -5,20 +5,26 @@ export const runtime = 'nodejs';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-interface PDFTextItem {
-  str?: string;
-  [key: string]: unknown;
-}
-
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
-    // Dynamic import to handle pdf-parse's module system
-    const pdfParse = (await import("pdf-parse")).default;
-    const data = await pdfParse(buffer);
+    console.log('PDF Buffer size:', buffer.length);
+    
+    // Use pdf-parse with proper configuration
+    const pdfParse = (await import("pdf-parse")).default as any;
+    
+    const data = await pdfParse(buffer, {
+      max: 0, // Parse all pages
+      version: 'default'
+    });
+    
+    console.log('PDF parsed successfully. Pages:', data.numpages);
+    console.log('Text length:', data.text.length);
+    
     return data.text;
   } catch (error) {
     console.error("Error parsing PDF:", error);
-    throw new Error("Failed to extract text from PDF");
+    console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
+    throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -36,22 +42,56 @@ export async function POST(req: Request) {
       return Response.json({ error: "Only PDF files are allowed" }, { status: 400 });
     }
 
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return Response.json({ error: "File too large (max 10MB)" }, { status: 400 });
+    }
+
+    // Validate file size (min 1KB)
+    if (file.size < 1024) {
+      return Response.json({ error: "File too small or corrupt" }, { status: 400 });
+    }
+
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    
+    // Check PDF signature
+    const header = buffer.toString('utf8', 0, 5);
+    if (header !== '%PDF-') {
+      return Response.json({ error: "Invalid PDF file" }, { status: 400 });
+    }
+
     const text = await extractTextFromPDF(buffer);
 
     if (!text || text.trim().length === 0) {
       return Response.json({ error: "No text found in PDF" }, { status: 400 });
     }
 
+    console.log('Extracted text length:', text.length);
+
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
     const prompt = `
-Analisis CV berikut dan berikan penilaian numerik untuk setiap aspek.
+Kamu adalah HR professional yang kasual dan to-the-point. Analisis CV ini dengan gaya bicara yang santai tapi tetap profesional.
 
+CV yang akan dianalisis:
 ${text}
 
-WAJIB return dalam format JSON YANG VALID seperti ini (tidak boleh ada teks lain):
+RULES PENULISAN (WAJIB DIIKUTI):
+1. Tulis seperti orang ngobrol biasa - pakai "nih", "sih", "banget", "cukup oke", "lumayan solid"
+2. JANGAN pakai:
+   - Kata "Anda/Kandidat" → pakai "kamu/lo" 
+   - Kalimat bertele-tele → langsung to the point
+   - Bahasa corporate formal → pakai bahasa gaul profesional
+   - Pujian berlebihan → realistis aja
+3. Contoh gaya:
+   ❌ "Kandidat memiliki keterampilan yang sangat baik"
+   ✅ "Skill-nya cukup solid nih"
+   
+   ❌ "Perlu meningkatkan presentasi dokumen"
+   ✅ "CV-nya bisa lebih rapi lagi"
+
+WAJIB return dalam format JSON YANG VALID (tidak ada teks lain):
 {
   "overall_score": [angka 1-100],
   "scores": {
@@ -61,28 +101,29 @@ WAJIB return dalam format JSON YANG VALID seperti ini (tidak boleh ada teks lain
     "achievements": [angka 1-100],
     "presentation": [angka 1-100]
   },
-  "summary": "[1-2 kalimat singkat]",
+  "summary": "[2 kalimat max, kasual tapi jelas. Contoh: 'Profile-nya lumayan solid nih, pengalaman dan skill udah cukup mumpuni. Tinggal poles dikit lagi biar makin standout.']",
   "strengths": [
-    "[Poin 1: max 1 kalimat]",
-    "[Poin 2: max 1 kalimat]",
-    "[Poin 3: max 1 kalimat]"
+    "[Contoh: 'Pengalaman kerja lo udah cukup relevan, match sama role yang dicari']",
+    "[Contoh: 'Skill technical-nya komplit, dari frontend sampe backend tercover']",
+    "[Contoh: 'Ada beberapa achievement yang cukup wow, kayak naikin conversion rate 40%']"
   ],
   "improvements": [
-    "[Poin 1: max 1 kalimat]",
-    "[Poin 2: max 1 kalimat]"
+    "[Contoh: 'CV-nya masih terlalu panjang, mending dibikin lebih concise']",
+    "[Contoh: 'Kurang ada angka/metrics di pencapaian, padahal itu penting banget']"
   ],
   "recommendations": [
-    "[Poin 1: max 1 kalimat]",
-    "[Poin 2: max 1 kalimat]"
+    "[Contoh: 'Tambahin portfolio atau link GitHub biar recruiter bisa liat hasil karya lo']",
+    "[Contoh: 'Coba highlight 3-4 achievement utama aja di bagian atas, yang paling wow']"
   ]
 }
 
-PENTING: 
-- Langsung ke inti. to the point.
-- gunakan bahasa indonesia manusia, human naturalized. jangan terlalu formal.
-- Response harus PURE JSON, tidak ada text tambahan
-- Nilai 1-25 = Sangat Kurang, 26-50 = Kurang, 51-75 = Cukup, 76-100 = Sangat Baik
-- Overall score adalah rata-rata dari semua scores
+PENTING BANGET:
+- Nilai 1-25 = Kurang banget, 26-50 = Masih kurang, 51-75 = Oke lah, 76-100 = Bagus banget
+- Overall score = rata-rata semua scores
+- Response HARUS pure JSON, no markdown, no backticks
+- Jujur aja dalam penilaian, jangan lebay
+- Setiap poin MAX 15 kata, langsung to the point
+- Pakai bahasa Indonesia yang natural kayak ngobrol sama temen
     `;
 
     const result = await model.generateContent(prompt);
@@ -90,6 +131,8 @@ PENTING:
     
     // Clean up response to ensure it's valid JSON
     output = output.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    console.log('AI Response:', output.substring(0, 200));
     
     const analysisData = JSON.parse(output);
 
